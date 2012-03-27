@@ -12,8 +12,9 @@ Set Up
     1. Get a C2DM Account from Google.
       (http://code.google.com/intl/en/android/c2dm/)
     2. Make sure that set google account on your target. (required for C2DM)
-    2. Modify 'assets/airshipconfig.properties' to your information.
-    3. Modify 'AndroidManifest.xml' to your information.
+    3. Modify 'assets/airshipconfig.properties' to your information.
+    4. Modify 'AndroidManifest.xml' to your information.
+    5. Rename 'com.example.UACordova' to your package
 
 Refereces:
     Cordova(PhoneGap) - http://phonegap.com/
