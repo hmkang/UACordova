@@ -50,9 +50,14 @@ public class IntentReceiver extends BroadcastReceiver {
 
 		    int id = intent.getIntExtra(PushManager.EXTRA_NOTIFICATION_ID, 0);
 
+            String alert = intent.getStringExtra(PushManager.EXTRA_ALERT);
+            String extra = "";
+
+            PushNotificationPlugin plugin = PushNotificationPlugin.getInstance();
+            plugin.sendResultBack(alert, extra);
+
 		    Log.i(logTag, "Received push notification. Alert: " 
-		            + intent.getStringExtra(PushManager.EXTRA_ALERT)
-		            + " [NotificationID="+id+"]");
+		            + alert " [NotificationID="+id+"]");
 
 		    logPushExtras(intent);
 
