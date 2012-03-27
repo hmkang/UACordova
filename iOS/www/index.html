@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title></title>
+  
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />-->
+	<meta charset="utf-8">
+
+	<!-- iPad/iPhone specific css below, add after your main css >
+	<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />		
+	<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />		
+	-->
+	<!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->        
+	<script type="text/javascript" charset="utf-8" src="cordova-1.5.0.js"></script>
+    <script type="text/javascript" charset="utf-8" src="PushNotification.js"></script>
+    <script type="text/javascript">
+
+
+	// If you want to prevent dragging, uncomment this section
+	/*
+	function preventBehavior(e) 
+	{ 
+      e.preventDefault(); 
+    };
+	document.addEventListener("touchmove", preventBehavior, false);
+	*/
+	
+	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+	for more details -jm */
+	/*
+	function handleOpenURL(url)
+	{
+		// TODO: do something with the url passed in.
+	}
+	*/
+	
+	function onBodyLoad()
+	{		
+		document.addEventListener("deviceready", onDeviceReady, false);
+	}
+	
+	/* When this function is called, Cordova has been initialized and is ready to roll */
+	/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+	see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+	for more details -jm */
+	function onDeviceReady()
+	{
+		// do your thing!
+		//navigator.notification.alert("Cordova is working")
+        //window.plugins.pushNotification.log("onDeviceReady called");
+        //window.plugins.pushNotification.startNotify();
+        //navigator.camera.getPicture(libs.onPictureSuccess, libs.onFail);
+        //console.debug('device is ready');
+        console.log('device is ready');
+	}
+    
+    /**
+     * Customize following callbacks in your application
+     */
+    // Customized callback for receiving notification
+    PushNotification.prototype.notificationCallback = function (notification) {
+        window.plugins.pushNotification.log("Received a notification.");
+        var msg = '';
+        for (var property in notification) {
+            msg += property + ' : ' + notification[property] + '<br>';
+        }
+        message.innerHTML='notification received:<br><br>' + msg;
+        
+        alert(notification['alert']);
+        
+    };
+
+    // when APN register succeeded
+    function successCallback(e) {
+        result.innerHTML="Device registered. Device token:<br>" + e.deviceToken + '<br><br>';
+        registerUAPush(e.deviceToken, e.host, e.appKey, e.appSecret);
+    }
+
+    // when APN register failed
+    function errorCallback(e) {
+        result.innerHTML='Error during registration: '+e.error;
+        registerButton.disabled=false;
+    }
+
+    // register button action
+    function registerAPN() {
+        
+        window.plugins.pushNotification.log("Registering with APNS via the App Delegate");
+        
+        
+        registerButton.disabled=true;
+        result.innerHTML='Registering...';
+        
+        window.plugins.pushNotification.register(successCallback, errorCallback, [{ alert:true, badge:true, sound:true }]);
+        
+        //or unregister
+        //navigator.pushNotification.register();
+    }
+
+    // register urban airship push service after APN is registered successfully
+    function registerUAPush(deviceToken, host, appKey, appSecret) {
+        
+        window.plugins.pushNotification.log("Registering with Urban Airship.");
+        
+        var resultStr = result.innerHTML;
+        result.innerHTML += 'Registering with Urban Airship Push Service...';
+        
+        var request = new XMLHttpRequest();
+        
+        // open the client and encode our URL
+        request.open('PUT', host+'api/device_tokens/'+deviceToken, true, appKey, appSecret);
+        
+        // callback when request finished
+        request.onload = function() {
+            result.innerHTML = resultStr + 'Status: ' + this.status + '<br>';
+            
+            if(this.status == 200 || this.status == 201) {
+                // register UA push success
+                result.innerHTML = result.innerHTML + 'UA push service successfully registered.';
+            } else {
+                // error
+                result.innerHTML = result.innerHTML + 'Error when registering UA push service.<br>error: '+this.statusText;
+            }
+            
+            // for demo, you can re-register again
+            registerButton.disabled=false;
+        };
+        
+        request.send();
+    }
+    </script>
+        
+  </head>
+  <body onLoad="onBodyLoad()">
+      <input id="registerButton" type="button" value="Register Push Notification" onclick="registerAPN();"/>
+      <p id="result"></p>
+      <p id="message"></p>
+      <div><img src="icon.png" id="imgIcon" /></div>
+  </body>
+</html>
