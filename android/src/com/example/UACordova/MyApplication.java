@@ -37,10 +37,18 @@ import com.urbanairship.push.PushPreferences;
 
 public class MyApplication extends Application {
     
+    private PushNotificationPlugin mPlugin = null;
+    
+    public PushNotificationPlugin getPushNotificationPlugin() {
+        return this.mPlugin;
+    }
+    
     @Override
     public void onCreate() {
         
         super.onCreate();
+        
+        mPlugin = new PushNotificationPlugin();
         
         AirshipConfigOptions options = AirshipConfigOptions.loadDefaultOptions(this);
 
@@ -73,7 +81,8 @@ public class MyApplication extends Application {
 */
         PushManager.shared().setIntentReceiver(IntentReceiver.class);
 
-	PushPreferences prefs = PushManager.shared().getPreferences();
-	Logger.info("My Application onCreate - App APID: " + prefs.getPushId());
+        PushPreferences prefs = PushManager.shared().getPreferences();
+        Logger.info("My Application onCreate - App APID: " + prefs.getPushId());
     }
 }
+

@@ -12,13 +12,11 @@ PushNotification.prototype.registerCallback = function(successCallback, failureC
 
 PushNotification.prototype.notificationCallback = function (json) {
 	console.log('notificationCallback');
-	alert(json || "empty");
-    var data = JSON.decode(json);
-    navigator.notification.alert("Success", data.msg);
+    var data = JSON.parse(json);
+    navigator.notification.alert(data.msg);
 };
 
 PhoneGap.addConstructor(function() {
-    if (typeof navigator.pushNotification == "undefined")
-        navigator.pushNotification = new PushNotification();
+    PhoneGap.addPlugin("pushNotification", new PushNotification());
 });
 

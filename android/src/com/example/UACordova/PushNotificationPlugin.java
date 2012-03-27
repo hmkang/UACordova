@@ -13,32 +13,23 @@ import org.apache.cordova.api.PluginResult.Status;
 public class PushNotificationPlugin extends Plugin {
     final static String TAG = PushNotificationPlugin.class.getSimpleName();
 
-    static PushNotificationPlugin instance = null;
-
     public static final String ACTION = "registerCallback";
 
-    public static PushNotificationPlugin getInstance() {
-        return instance;
-    }
-
-    public void sendResultBack(String msg, String payload) {
+    public void sendResultBack(String msg) {
         JSONObject data = new JSONObject();
         try {
             data.put("msg", msg);
-            data.put("payload", payload);
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
-        String js = String.format("navigator.pushNotification.notificationCallback('%s');", data.toString());
-        //Log.d(TAG, "Sending javascript " + js);
+        String js = String.format("window.plugins.pushNotification.notificationCallback('%s');", data.toString());
         this.sendJavascript(js);
+        Log.d(TAG, "Sending javascript " + js);
     }
 
     @Override
     public PluginResult execute(String action, JSONArray data,
             String callbackId) {
-
-        instance = this;
 
         PluginResult result = null;
         if (ACTION.equals(action)) {
